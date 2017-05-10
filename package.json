@@ -1,0 +1,33 @@
+{
+  "name": "nws",
+  "version": "1.0.0",
+  "description": "serial app with nwjs",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fkkmemi/nws.git"
+  },
+  "keywords": [
+    "nwjs"
+  ],
+  "author": "fkkmemi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fkkmemi/nws/issues"
+  },
+  "homepage": "https://github.com/fkkmemi/nws#readme",
+  "window": {
+    "title": "Serial test",
+    "width": 1000,
+    "height": 700,
+    "min_width": 400,
+    "min_height": 200
+  },
+  "dependencies": {
+    "moment": "^2.18.1",
+    "serialport": "^4.0.7"
+  }
+}
