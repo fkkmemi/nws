@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LOOP serial tester</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+</head>
+<body>
+<!--<nav class="navbar navbar-inverse navbar-fixed-top">-->
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">LOOP Serial Tester</a>
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Home</a></li>
+                    <li><a href="#">Res</a></li>
+                    <li><a href="#">Res</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Setting comport</div>
+                    <div class="panel-body">
+
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label for="sel-port" class="col-sm-3 control-label">Port</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="sel-port"></select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sel-baud" class="col-sm-3 control-label">Baud</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="sel-baud">
+                                        <option value="9600">9600</option>
+                                        <option value="115200" selected>115200</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                        <a class="btn btn-default" href="javascript:PortOpen()" role="button" id="btn-open">Open</a>
+                        <a class="btn btn-default active" href="javascript:PortClose()" role="button" id="btn-close">Close</a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Setting Rx
+                    </div>
+                    <div class="panel-body">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="" checked> Hex/ASCII(not ready)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Setting Tx</div>
+                    <div class="panel-body">
+                        Panel content 31
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Packet Rx
+                        <div class="checkbox-inline pull-right">
+                            <label>
+                                <input id="chk-scrollr" type="checkbox" value="" checked> auto scroll
+                            </label>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <textarea class="form-control" rows="6" id="logr"></textarea>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Packet Tx
+                        <div class="checkbox-inline pull-right">
+                            <label>
+                                <input id="chk-scrollt" type="checkbox" value="" checked> auto scroll
+                            </label>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <textarea class="form-control" rows="6" id="logt"></textarea>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Log</div>
+                    <div class="panel-body">
+                        <textarea class="form-control" rows="6" id="log"></textarea>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script>
+        var SerialPort = require('serialport');
+        var moment = require('moment');
+        var Ctrl = {
+            ScrollR : true,
+            ScrollT : true,
+            LogTmrR : setInterval(function () {
+                if(!Ctrl.ScrollR) return;
+                $("#logr").animate({
+                    scrollTop: $("#logr")[0].scrollHeight - $("#logr").height()
+                });
+            },1000),
+            LogTmrT : setInterval(function () {
+                if(!Ctrl.ScrollT) return;
+                $("#logt").animate({
+                    scrollTop: $("#logt")[0].scrollHeight - $("#logt").height()
+                });
+            },1000)
+        };
+        var R = {
+            t : setInterval(function () {
+
+
+            },1),
+            q : [],
+
+            LOOP : {
+                step :0,
+                Rx : (r) => {
+
+                }
+            },
+
+            LG : {
+                step :0,
+                Rx : (r) => {
+
+                }
+            }
+        };
+        SerialPort.list(function (e,ports) {
+            ports.forEach(function(port) {
+                let s = port.comName;
+                if(port.pnpId) s += '|' + port.pnpId;
+                if(port.manufacturer) s += '|' + port.manufacturer;
+                $('#sel-port').append('<option value="' + port.comName + '">' + s + '</option>');
+                LogAdd('scan ' + s);
+            });
+        });
+
+        $('#sel-port').append('<option value="err port">err port</option>');
+
+        $('#chk-scrollr').change(function (e) {
+            //LogAdd(JSON.stringify(e));
+            Ctrl.ScrollR = $('#chk-scrollr').prop('checked');
+//            if($('#chk-scrollr').prop('checked')) {
+//                LogAdd('auto scroll checked');
+//            }
+//            else {
+//                LogAdd('auto scroll unchecked');
+//            }
+        });
+
+        $('#chk-scrollt').change(function (e) {
+            Ctrl.ScrollT = $('#chk-scrollt').prop('checked');
+        });
+
+        function LogAdd(s) {
+            $('#log').append('[' + moment().format('HH:mm:ss') + '] ' + s + '\n');
+        }
+
+        function LogAddR(s) {
+            $('#logr').append('[' + moment().format('HH:mm:ss') + '] ' + s + '\n');
+        }
+
+        function LogAddT(s) {
+            $('#logt').append('[' + moment().format('HH:mm:ss') + '] ' + s + '\n');
+        }
+        var port = null;
+        function PortOpen() {
+            let p = $('#sel-port').val();
+            let b = parseInt($('#sel-baud').val());
+
+
+            port = new SerialPort(p, {
+                baudRate:b,
+                parser: SerialPort.parsers.raw
+            }).on('open', function(err) { //init
+                if(err) return LogAdd('sopen error : ' + err);
+                $('#btn-open').addClass('active');
+                $('#btn-close').removeClass('active');
+                LogAdd('open success');
+            }).on('data', function (data) {
+                let s = '';
+                let len = data.length;
+                for(var i = 0; i < len; i++) {
+                    s += data[i].toString(16) + ' ';
+                }
+                LogAddR(s);
+            }).on('close',function(err) {
+                if(err) LogAdd('s close err : ' + err);
+                $('#btn-open').removeClass('active');
+                $('#btn-close').addClass('active');
+                LogAdd('close success');
+            }).on('error', function(err) {
+                if(err) LogAdd(err);
+            });
+        }
+        function PortClose() {
+            if(!port) return LogAdd('aleady closed');
+            port.close();
+            port = null;
+        }
+
+//        port.on('open', function(err) { //init
+//            if(err) return LogAdd('sopen error : ' + err);
+//            LogAdd('open success');
+//        });
+//        port.on('data', function (data) {
+//            var str = '';
+//
+//            var len = data.length;
+//            for(var i = 0; i < len; i++) {
+//                str += data[i] + ' ';
+//            }
+//            LogAdd(str);
+//        });
+//        port.on('close',function(err) {
+//            if(err) LogAdd('s close err : ' + err);
+//            LogAdd('close success');
+//        });
+
+    </script>
+</body>
+</html>
